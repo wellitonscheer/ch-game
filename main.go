@@ -2,33 +2,56 @@ package main
 
 import "fmt"
 
-var screen [][]string
+type Screen struct {
+	frame [][]string
+}
 
-func main() {
-	dp := "b"
-	for i := 0; i < 30; i++ {
-		if i < 1 {
-			dp = "a"
-		} else if i == 29 {
-			dp = "b"
-		}
+func NewScreen() *Screen {
+	return &Screen{
+		frame: [][]string{},
+	}
+}
 
-		line := []string{}
-		for i := 0; i < 100; i++ {
-			line = append(line, dp)
-		}
-		screen = append(screen, line)
+func lineOfCharacters(times int, char string) []string {
+	line := []string{}
+
+	for i := 0; i < times; i++ {
+		line = append(line, char)
 	}
 
-	for {
-		rs := ""
-		for _, line := range screen {
-			rn := ""
-			for _, pixel := range line {
-				rn = fmt.Sprintf("%s%s", rn, pixel)
-			}
-			rs = fmt.Sprintf("%s%s\n", rs, rn)
+	return line
+}
+
+func (s *Screen) addLinesToFrame(lines int, char string) {
+	for i := 0; i < lines; i++ {
+		line := lineOfCharacters(100, char)
+		s.frame = append(s.frame, line)
+	}
+}
+
+func (s *Screen) Render() {
+	s.addLinesToFrame(1, "-")
+	s.addLinesToFrame(30, "a")
+	s.addLinesToFrame(1, "-")
+}
+
+func (s *Screen) Display() {
+	backFrame := ""
+	for _, line := range s.frame {
+		rn := ""
+		for _, pixel := range line {
+			rn = fmt.Sprintf("%s%s", rn, pixel)
 		}
-		fmt.Printf("%s", rs)
+		backFrame = fmt.Sprintf("%s%s\n", backFrame, rn)
+	}
+	fmt.Print(backFrame)
+}
+
+func main() {
+	screen := NewScreen()
+	screen.Render()
+
+	for {
+		screen.Display()
 	}
 }
