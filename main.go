@@ -1,14 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type Screen struct {
-	frame [][]string
+	frame  [][]string
+	height int
+	width  int
 }
 
 func NewScreen() *Screen {
 	return &Screen{
-		frame: [][]string{},
+		frame:  [][]string{},
+		height: 35,
+		width:  150,
 	}
 }
 
@@ -24,14 +31,14 @@ func lineOfCharacters(times int, char string) []string {
 
 func (s *Screen) addLinesToFrame(lines int, char string) {
 	for i := 0; i < lines; i++ {
-		line := lineOfCharacters(100, char)
+		line := lineOfCharacters(s.width, char)
 		s.frame = append(s.frame, line)
 	}
 }
 
 func (s *Screen) Render() {
 	s.addLinesToFrame(1, "-")
-	s.addLinesToFrame(30, "a")
+	s.addLinesToFrame(s.height, "a")
 	s.addLinesToFrame(1, "-")
 }
 
@@ -48,10 +55,15 @@ func (s *Screen) Display() {
 }
 
 func main() {
+	ticker := time.NewTicker(time.Second / 60)
+
 	screen := NewScreen()
 	screen.Render()
 
 	for {
-		screen.Display()
+		select {
+		case <-ticker.C:
+			screen.Display()
+		}
 	}
 }
